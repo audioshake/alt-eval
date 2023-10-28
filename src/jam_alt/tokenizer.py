@@ -1,8 +1,8 @@
 import copy
 from dataclasses import dataclass, field
-import regex as re
 import unicodedata
 
+import regex as re
 from sacremoses import MosesPunctNormalizer, MosesTokenizer
 
 

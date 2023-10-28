@@ -8,7 +8,6 @@ import jiwer
 from .error_visualizer import ErrorVisualizer
 from .tokenizer import LINE, PAREN, PUNCT, SECT, LyricsTokenizer, Token, tokens_as_words
 
-
 IDENTITY_TRANSFORM = jiwer.Compose([])
 
 
