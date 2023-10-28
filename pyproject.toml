@@ -31,24 +31,3 @@ line_length = 100
 line-length = 100
 target-version = ["py39"]
 include = '\.pyi?$'
-exclude = '''
-(
-  /(
-      \.git
-    | \.hg
-    | \.mypy_cache
-    | \.tox
-    | \.venv
-    | _build
-    | buck-out
-    | build
-    | dist
-    | \.idea
-    | \.vscode
-    | scripts
-    | notebooks
-    | separate.egg-info
-    | \.eggs
-  )/
-)
-'''
