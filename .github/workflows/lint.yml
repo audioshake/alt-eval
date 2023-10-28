@@ -1,0 +1,27 @@
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches: [main]
+
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout github repo
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+
+      - name: Black
+        uses: psf/black@stable
+        with:
+          args: src/jam_alt --check --diff
+
+      - name: isort
+        uses: isort/isort-action@master
+        with:
+          sort-paths: src/jam_alt
+          configuration: --settings-path pyproject.toml --check-only --diff
