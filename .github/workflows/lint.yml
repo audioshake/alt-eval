@@ -11,14 +11,15 @@ jobs:
 
     steps:
       - name: Checkout github repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           lfs: true
 
       - name: Black
         uses: psf/black@stable
         with:
-          args: src/jam_alt --check --diff
+          options: --check --verbose
+          src: ./src
 
       - name: isort
         uses: isort/isort-action@master
