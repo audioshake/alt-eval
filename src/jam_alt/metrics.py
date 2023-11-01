@@ -156,7 +156,7 @@ def compute_other_metrics(
         tg = tag[:4]
         H, S, D, I = counts[tag].H, counts[tag].S, counts[tag].D, counts[tag].I
         P = H / (H + S + I) if H + S + I else float("nan")
-        R = H / (H + S + D)
+        R = H / (H + S + D) if H + S + D else float("nan")
         results[f"P_{tg}"] = P
         results[f"R_{tg}"] = R
         if P == float("nan") or R == float("nan"):
