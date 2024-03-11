@@ -11,7 +11,7 @@ dependencies = [
     "jiwer>=3.0.3",
     "python-iso639>=2023.6.15",
     "regex>=2023.8.8",
-    "sacremoses>=0.0.53",
+    "sacremoses==0.0.53",
 ]
 classifiers = [
     "License :: OSI Approved :: MIT License",
@@ -24,6 +24,12 @@ classifiers = [
     "Topic :: Multimedia :: Sound/Audio",
     "Topic :: Multimedia :: Sound/Audio :: Speech",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+[project.optional-dependencies]
+ja = [
+    "fugashi==1.3.0",
+    "unidic-lite==1.0.8",
 ]
 
 
