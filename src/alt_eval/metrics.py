@@ -123,6 +123,8 @@ def compute_word_metrics(
 
     results = {
         "WER": wo.wer,
+        "MER": wo.mer,
+        "WIL": wo.wil,
         "ER_case": error_counts["case"] / total_len,
     }
     if visualize_errors:
