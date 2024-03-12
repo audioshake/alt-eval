@@ -206,10 +206,10 @@ class LyricsTokenizer:
                 else:
                     # In other languages that do not use spaces to separate words, treat each
                     # character as a separate word
-                    text = self._no_spaces_re.sub(r" \1 ", text)
+                    line = self._no_spaces_re.sub(r" \1 ", line)
 
-                # Insert spaces between characters from different scripts
-                text = self._different_scripts_re.sub(" ", text)
+                    # Insert spaces between characters from different scripts
+                    line = self._different_scripts_re.sub(" ", line)
 
                 result.extend(line.strip().split())
 
