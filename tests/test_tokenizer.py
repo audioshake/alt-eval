@@ -14,7 +14,7 @@ from alt_eval.tokenizer import LyricsTokenizer
         ),
         (
             "en",
-            "It 'll be fun (ha!)",
+            "It'll be fun (ha!)",
             ["It", "'ll", "be", "fun", "(", "ha", "!", ")"]
         ),
         (
