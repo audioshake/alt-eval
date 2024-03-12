@@ -18,6 +18,11 @@ from alt_eval.tokenizer import LyricsTokenizer
             ["It", "'ll", "be", "fun", "(", "ha", "!", ")"]
         ),
         (
+            "en",
+            "Just like 2Pac",
+            ["Just", "like", "2Pac"],
+        ),
+        (
             "de",
             "Sei's Melancholie",
             ["Sei", "'s", "Melancholie"]
