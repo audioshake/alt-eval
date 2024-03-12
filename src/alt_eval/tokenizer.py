@@ -146,18 +146,15 @@ class LyricsTokenizer:
                 if line.count("\n") >= 2:
                     result.append("\n\n")
             elif line.strip():
-                # Tokenize depending on the language
-                if language == "ja":
-                    line = self._tokenize_japanese(line)
-                else:
-                    line = self._tokenize_moses(line, language)
+                # Tokenize using sacremoses
+                line = self._tokenize_moses(line, language)
 
-                    # In languages that do not use spaces to separate words, treat each
-                    # character as a separate word
-                    line = self._no_spaces_re.sub(r" \1 ", line)
+                # In languages that do not use spaces to separate words, treat each
+                # character as a separate word
+                line = self._no_spaces_re.sub(r" \1 ", line)
 
-                    # Insert spaces between characters from different scripts
-                    line = self._different_scripts_re.sub(" ", line)
+                # Insert spaces between characters from different scripts
+                line = self._different_scripts_re.sub(" ", line)
 
                 result.extend(line.strip().split())
 
@@ -170,18 +167,6 @@ class LyricsTokenizer:
     @functools.lru_cache(maxsize=200)
     def _get_moses_punct_normalizer(self, language: str) -> MosesPunctNormalizer:
         return MosesPunctNormalizer(lang=language)
-
-    @functools.cached_property
-    def _fugashi_tagger(self):
-        try:
-            import fugashi
-
-            return fugashi.Tagger()
-        except (ImportError, RuntimeError) as e:
-            raise RuntimeError(
-                "Failed to initialize the tagger for Japanese. Please make sure to install the "
-                "required dependencies via `pip install 'jam-alt[ja]'."
-            ) from e
 
     def _tokenize_moses(self, line: str, language: str) -> str:
         # Ensure the line ends with punctuation to make the tokenizer treat it as
@@ -221,6 +206,3 @@ class LyricsTokenizer:
             line = self._contraction_de_re.sub(r"\g<a> \g<b>", line)
 
         return line
-
-    def _tokenize_japanese(self, line: str) -> str:
-        return " ".join(w.surface.strip() for w in self._fugashi_tagger(line))

@@ -27,10 +27,6 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-ja = [
-    "fugashi==1.3.0",
-    "unidic-lite==1.0.8",
-]
 test = [
     "pytest>=7.3.1",
 ]
