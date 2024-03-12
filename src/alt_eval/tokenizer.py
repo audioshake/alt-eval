@@ -122,18 +122,6 @@ class LyricsTokenizer:
             flags=re.VERSION1,
         )
 
-    @functools.cached_property
-    def _fugashi_tagger(self):
-        try:
-            import fugashi
-
-            return fugashi.Tagger()
-        except (ImportError, RuntimeError) as e:
-            raise RuntimeError(
-                "Failed to initialize the tagger for Japanese. Please make sure to install the "
-                "required dependencies via `pip install 'jam-alt[ja]'."
-            ) from e
-
     def __call__(self, text: str, language: str = "en") -> list[Token]:
         """
         Tokenize the given text.
@@ -145,12 +133,6 @@ class LyricsTokenizer:
         Returns:
             A list of `Token` objects.
         """
-        if language not in self._tokenizers:
-            self._tokenizers[language] = MosesTokenizer(lang=language)
-            self._punct_normalizers[language] = MosesPunctNormalizer(lang=language)
-        tokenizer = self._tokenizers[language]
-        punct_normalizer = self._punct_normalizers[language]
-
         text = self._non_text_re.sub(" ", text)
         text = unicodedata.normalize("NFC", text)
         text = text.rstrip("\n")
@@ -164,47 +146,13 @@ class LyricsTokenizer:
                 if line.count("\n") >= 2:
                     result.append("\n\n")
             elif line.strip():
-                # Ensure the line ends with punctuation to make the tokenizer treat it as
-                # a sentence
-                remove_last = False
-                if not self._end_punctuation_re.search(line):
-                    remove_last = True
-                    line += " ."
-
-                line = punct_normalizer.normalize(line)
-
-                if language in ["en", "fr", "it"]:
-                    # Protect apostrophes at word boundaries to prevent the tokenizer from
-                    # interpreting them as quotes
-                    line = self._word_boundary_apos_re.sub("@@apos@@", line)
-                else:
-                    # For languages where the tokenizer doesn't handle apostrophes within words,
-                    # protect all apostrophes
-                    line = line.replace("'", "@@apos@@")
-
-                line = tokenizer.tokenize(
-                    line.strip(),
-                    return_str=True,
-                    escape=False,
-                    aggressive_dash_splits=True,
-                    protected_patterns=[r"\*+", r"@@apos@@"],
-                )
-
-                if remove_last:
-                    assert line.endswith(" ."), line
-                    line = line[:-2]
-
-                # Post-process apostrophes
-                line = line.replace("@@apos@@", "'")
-                if language == "de":
-                    # Split contractions
-                    line = self._contraction_de_re.sub(r"\g<a> \g<b>", line)
-
+                # Tokenize depending on the language
                 if language == "ja":
-                    # Tokenize Japanese
-                    line = " ".join(w.surface.strip() for w in self._fugashi_tagger(line))
+                    line = self._tokenize_japanese(line)
                 else:
-                    # In other languages that do not use spaces to separate words, treat each
+                    line = self._tokenize_moses(line, language)
+
+                    # In languages that do not use spaces to separate words, treat each
                     # character as a separate word
                     line = self._no_spaces_re.sub(r" \1 ", line)
 
@@ -214,3 +162,65 @@ class LyricsTokenizer:
                 result.extend(line.strip().split())
 
         return to_rich_tokens(result)
+
+    @functools.lru_cache(maxsize=200)
+    def _get_moses_tokenizer(self, language: str) -> MosesTokenizer:
+        return MosesTokenizer(lang=language)
+
+    @functools.lru_cache(maxsize=200)
+    def _get_moses_punct_normalizer(self, language: str) -> MosesPunctNormalizer:
+        return MosesPunctNormalizer(lang=language)
+
+    @functools.cached_property
+    def _fugashi_tagger(self):
+        try:
+            import fugashi
+
+            return fugashi.Tagger()
+        except (ImportError, RuntimeError) as e:
+            raise RuntimeError(
+                "Failed to initialize the tagger for Japanese. Please make sure to install the "
+                "required dependencies via `pip install 'jam-alt[ja]'."
+            ) from e
+
+    def _tokenize_moses(self, line: str, language: str) -> str:
+        # Ensure the line ends with punctuation to make the tokenizer treat it as
+        # a sentence
+        remove_last = False
+        if not self._end_punctuation_re.search(line):
+            remove_last = True
+            line += " ."
+
+        line = self._get_moses_punct_normalizer(language).normalize(line)
+
+        if language in ["en", "fr", "it"]:
+            # Protect apostrophes at word boundaries to prevent the tokenizer from
+            # interpreting them as quotes
+            line = self._word_boundary_apos_re.sub("@@apos@@", line)
+        else:
+            # For languages where the tokenizer doesn't handle apostrophes within words,
+            # protect all apostrophes
+            line = line.replace("'", "@@apos@@")
+
+        line = self._get_moses_tokenizer(language).tokenize(
+            line.strip(),
+            return_str=True,
+            escape=False,
+            aggressive_dash_splits=True,
+            protected_patterns=[r"\*+", r"@@apos@@"],
+        )
+
+        if remove_last:
+            assert line.endswith(" ."), line
+            line = line[:-2]
+
+        # Post-process apostrophes
+        line = line.replace("@@apos@@", "'")
+        if language == "de":
+            # Split contractions
+            line = self._contraction_de_re.sub(r"\g<a> \g<b>", line)
+
+        return line
+
+    def _tokenize_japanese(self, line: str) -> str:
+        return " ".join(w.surface.strip() for w in self._fugashi_tagger(line))
