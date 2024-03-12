@@ -11,7 +11,7 @@ The package implements metrics designed to work well with lyrics formatted accor
   - Section breaks (i.e. double line breaks)
 
 ## Usage
-Install the package with `pip install alt-eval`.
+Install the package with `pip install alt-eval`. (Use the `ja` extra if you need to evaluate Japanese: `pip install alt-eval[ja]`.)
 
 To compute the metrics:
 ```python
