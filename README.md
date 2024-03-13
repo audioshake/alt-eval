@@ -10,6 +10,11 @@ The package implements metrics designed to work well with lyrics formatted accor
   - Line breaks
   - Section breaks (i.e. double line breaks)
 
+Under the hood, the text is pre-processed using the [`sacremoses`](https://github.com/hplt-project/sacremoses) tokenizer and punctuation normalizer.
+Note that apostrophes and single quotes are never treated as quotation marks, but as part of a word, marking an elision or a contraction.
+For writing systems that do not use spaces to separate words (Chinese, Japanese, Thai, Lao, Burmese, …), each character is considered as a separate word, as per [Radford et al. (2022)](https://arxiv.org/abs/2212.04356).
+See the [test cases](./tests/test_tokenizer.py) for examples of how different languages are tokenized.
+
 ## Usage
 Install the package with `pip install alt-eval`.
 

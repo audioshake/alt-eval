@@ -123,6 +123,8 @@ def compute_word_metrics(
 
     results = {
         "WER": wo.wer,
+        "MER": wo.mer,
+        "WIL": wo.wil,
         "ER_case": error_counts["case"] / total_len,
     }
     if visualize_errors:
@@ -194,7 +196,7 @@ def compute_metrics(
     """
     if isinstance(languages, str):
         languages = [languages] * len(references)
-    languages = [lg if lg == "cjk" else iso639.Language.match(lg).part1 for lg in languages]
+    languages = [iso639.Language.match(lg).part1 for lg in languages]
 
     tokenizer = LyricsTokenizer()
     tokens_ref, tokens_hyp = [], []
