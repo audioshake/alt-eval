@@ -21,7 +21,7 @@ jobs:
           python-version: 3.9
       
       - name: Install package
-        run: pip install '.[test,ja]'
+        run: pip install '.[test]'
       
       - name: Run tests
         run: pytest tests
