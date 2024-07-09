@@ -125,7 +125,12 @@ def compute_word_metrics(
         "WER": wo.wer,
         "MER": wo.mer,
         "WIL": wo.wil,
+        "hits": wo.hits,
+        "substitutions": wo.substitutions,
+        "deletions": wo.deletions,
+        "insertions": wo.insertions,
         "ER_case": error_counts["case"] / total_len,
+        "WER_case": wo.wer + error_counts["case"] / total_len,
     }
     if visualize_errors:
         results["errors_html"] = vis_htmls
