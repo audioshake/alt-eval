@@ -1,3 +1,3 @@
-from .metrics import compute_metrics
+from .metrics import compute_metrics as compute_metrics
 
 __version__ = "1.1.0"
