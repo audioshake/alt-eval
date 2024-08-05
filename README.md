@@ -30,7 +30,7 @@ dataset = load_dataset("audioshake/jam-alt")["test"]
 compute_metrics(dataset["text"], transcriptions, languages=dataset["language"])
 ```
 
-If you are only interested in WER, formatting- and punctuation-related metrics can be skipped by passing `include_other=False`.
+If you are only interested in WER, you may skip formatting- and punctuation-related metrics by passing `include_other=False`.
 
 Use `visualize_errors=True` to also get a list of HTML snippets that can be used to visualize the errors in each transcript.
 
