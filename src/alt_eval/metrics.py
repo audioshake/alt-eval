@@ -184,6 +184,7 @@ def compute_metrics(
     hypotheses: list[str],
     languages: Union[list[str], str] = "en",
     visualize_errors: bool = False,
+    include_other: bool = True,
 ) -> dict[str, Any]:
     """Compute all metrics for the given references and hypotheses.
 
@@ -192,7 +193,9 @@ def compute_metrics(
         hypotheses: A list of hypotheses.
         languages: The language of each reference transcript or a single language to use for all
             transcripts.
-        visualize_errors: Whether to visualize errors.
+        visualize_errors: Whether to visualize errors. Requires `include_other` to be True.
+        include_other: Whether to include metrics related to non-word (punctuation, formatting)
+            tokens in the result.
 
     Returns:
         A dictionary of metrics. If `visualize_errors` is `True`, the dictionary will also contain
@@ -209,15 +212,10 @@ def compute_metrics(
         tokens_ref.append(tokenizer(references[i], language=languages[i]))
         tokens_hyp.append(tokenizer(hypotheses[i], language=languages[i]))
 
-    results = {
-        **compute_word_metrics(
-            tokens_ref,
-            tokens_hyp,
-        ),
-        **compute_other_metrics(
-            tokens_ref,
-            tokens_hyp,
-            visualize_errors=visualize_errors,
-        ),
-    }
+    results = compute_word_metrics(tokens_ref, tokens_hyp)
+    if include_other:
+        results.update(
+            compute_other_metrics(tokens_ref, tokens_hyp, visualize_errors=visualize_errors)
+        )
+
     return results
